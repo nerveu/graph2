@@ -42,7 +42,6 @@ export function handleTaskJoined(event: TaskJoined): void {
   
   let participant = event.params.participant.toHex()
 
-  
   // UserDashStat Entity
   let userDashStat = UserDashStat.load(participant)
   if(userDashStat == null) {
@@ -63,7 +62,6 @@ export function handleUserRedeemed(event: UserRedeemed): void {
 
   let participant = event.params.participant.toHex()
 
-  
   // UserDashStat Entity
   let userDashStat = UserDashStat.load(participant)
   if(userDashStat == null) {
@@ -71,7 +69,7 @@ export function handleUserRedeemed(event: UserRedeemed): void {
     userDashStat = UserDashStat.load(participant)
     log.info('New UserDashStat entity created: {}', [participant])
   }
-  userDashStat.tribute.minus(event.params.amount)
+  userDashStat.tribute = userDashStat.tribute.minus(event.params.amount)
   userDashStat.save()                                                                    
 }
 
@@ -83,7 +81,6 @@ export function handleRecipientRedeemed(event: RecipientRedeemed): void {
 
   let recipient = event.params.recipient.toHex()
 
-  
   // UserDashStat Entity
   let userDashStat = UserDashStat.load(recipient)
   if(userDashStat == null) {
@@ -104,7 +101,6 @@ export function handleNameRegistered(event: NameRegistered): void {
 
   let user = event.params.user.toHex()
     
-  
   //  UserDashStat Entity
   let userDashStat = UserDashStat.load(user)
   if(userDashStat == null) {
@@ -123,7 +119,6 @@ export function handleNameRegistered(event: NameRegistered): void {
 export function handleSocialRegistered(event: SocialRegistered): void {
   
   let user = event.params.user.toHex()
-  
   
   // UserDashStat Entity
   let userDashStat = UserDashStat.load(user)
@@ -153,7 +148,6 @@ export function handleUserBlacklisted(event: UserBlacklisted): void {
 
   let user = event.params.user.toHex()
     
-  
   // UserDashStat Entity
   let userDashStat = UserDashStat.load(user)
   if(userDashStat == null) {
@@ -173,7 +167,6 @@ export function handleDisplayAchievementChanged(event: DisplayAchievementChanged
 
   let user = event.params.user.toHex()
     
-  
   // UserDashStat Entity
   let userDashStat = UserDashStat.load(user)
   if(userDashStat == null) {
