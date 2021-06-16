@@ -29,8 +29,6 @@ type UserTask @entity {
   taskData: Task
 }
 
-}
-
 type Bet @entity {
   id: ID!
   initiatorAddress: Bytes!
