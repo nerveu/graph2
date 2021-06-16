@@ -1,0 +1,37 @@
+specVersion: 0.0.2
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: NerveGlobal
+    network: ropsten
+    source:
+      address: "0xefAF2Fa34928576d127E82054a1BF92CdD5a15a5"
+      abi: NerveGlobal
+      startBlock: 10441829
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - Task
+        - UserTask
+        - Bet
+        - UserBet
+        - UserFavStat
+        - UserDashStat
+        - UserAchievement
+        - GlobalStat
+      abis:
+        - name: NerveGlobal
+          file: ./abis/NerveGlobal.json
+      eventHandlers:
+        - event: BetBailout(indexed address,indexed uint256,uint256)
+          handler: handleBetBailout
+        - event: BetJoined(indexed address,indexed uint256,uint256,bool)
+          handler: handleBetJoined
+        - event: BetRedeemed(indexed address,indexed uint256,uint256)
+          handler: handleBetRedeemed
+        - event: Voted(indexed address,indexed uint256,bool,bool)
+          handler: handleVoted
+      file: ./src/userfavstat.mapping.ts
