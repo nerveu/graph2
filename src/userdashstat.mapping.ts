@@ -1,23 +1,13 @@
 import { BigInt } from "@graphprotocol/graph-ts"
 import { log } from '@graphprotocol/graph-ts'
 import {
-  BetBailout,
-  BetClosed,
-  BetCreated,
-  BetFinished,
-  BetJoined,
-  BetProved,
-  BetRedeemed,
   DisplayAchievementChanged,
   NameRegistered,
   RecipientRedeemed,
   SocialRegistered,
-  TaskAdded,
   TaskJoined,
-  TaskProved,
   UserBlacklisted,
-  UserRedeemed,
-  Voted
+  UserRedeemed
 } from "../generated/NerveGlobal/NerveGlobal"
 import { 
   UserDashStat
@@ -56,7 +46,6 @@ function initializeUserDashStat (id: string): void {
 
 export function handleTaskJoined(event: TaskJoined): void {
   
-  let taskID = event.params.taskID.toHex()
   let participant = event.params.participant.toHex()
 
   
@@ -78,7 +67,6 @@ export function handleTaskJoined(event: TaskJoined): void {
 
 export function handleUserRedeemed(event: UserRedeemed): void {
 
-  let taskID = event.params.taskID.toHex()
   let participant = event.params.participant.toHex()
 
   
@@ -99,7 +87,6 @@ export function handleUserRedeemed(event: UserRedeemed): void {
 
 export function handleRecipientRedeemed(event: RecipientRedeemed): void {
 
-  let taskID = event.params.taskID.toHex()
   let recipient = event.params.recipient.toHex()
 
   
