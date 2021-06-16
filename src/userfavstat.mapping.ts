@@ -40,7 +40,7 @@ export function handleBetJoined(event: BetJoined): void {
     userFavStat = UserFavStat.load(participant)
     log.info('New UserFavStat entity created: {}', [participant])
   }
-  userFavStat.betBalance.minus(event.params.amount)
+  userFavStat.betBalance = userFavStat.betBalance.minus(event.params.amount)
   userFavStat.save()
 }
 
@@ -78,7 +78,7 @@ export function handleBetBailout(event: BetBailout): void {
   if(userFavStat == null) {
     initializeUserFavStat(participant)
     userFavStat = UserFavStat.load(participant)
-    log.info('New UserFavStats entity created: {}', [participant])
+    log.info('New UserFavStat entity created: {}', [participant])
   }
   userFavStat.betBalance = userFavStat.betBalance.plus(event.params.userStake)
   userFavStat.save()
