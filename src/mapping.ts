@@ -24,10 +24,10 @@ import {
   UserTask,
   Bet,
   UserBet,
-  UserFavStats,
-  UserDashStats,
-  UserAchievements,
-  GlobalStats
+  UserFavStat,
+  UserDashStat,
+  UserAchievement,
+  GlobalStat
 } from "../generated/schema"
 
 
@@ -35,59 +35,62 @@ import {
   /*             Initialization             */
   /******************************************/
 
-function initializeUserFavStats (id: string): void {
-  let userFavStats = new UserFavStats(id)
-  userFavStats.negativeVotes = BigInt.fromI32(0)
-  userFavStats.positiveVotes = BigInt.fromI32(0)
-  userFavStats.betBalance = BigInt.fromI32(0)
-  userFavStats.betsWon = BigInt.fromI32(0)
-  userFavStats.betsLost = BigInt.fromI32(0)
-
+function initializeUserFavStat (id: string): UserFavStat {
+  let userFavStat = new UserFavStat(id)
+  userFavStat.negativeVotes = BigInt.fromI32(0)
+  userFavStat.positiveVotes = BigInt.fromI32(0)
+  userFavStat.betBalance = BigInt.fromI32(0)
+  userFavStat.betsWon = BigInt.fromI32(0)
+  userFavStat.betsLost = BigInt.fromI32(0)
+  return userFavStat
 }
 
-function initializeUserDashStats (id: string): void {
-  let userDashStats = new UserDashStats(id)
-  userDashStats.userName = "Unknown"
-  userDashStats.displayAchievement = "None"
-  userDashStats.youtube = "None"
-  userDashStats.twitter = "None"
-  userDashStats.instagram = "None"
-  userDashStats.tiktok = "None"
-  userDashStats.twitch = "None"
-  userDashStats.tribute = BigInt.fromI32(0)
-  userDashStats.profit = BigInt.fromI32(0)
-  userDashStats.blacklist = []
+function initializeUserDashStat (id: string): UserDashStat {
+  let userDashStat = new UserDashStat(id)
+  userDashStat.userName = "Unknown"
+  userDashStat.displayAchievement = "None"
+  userDashStat.youtube = "None"
+  userDashStat.twitter = "None"
+  userDashStat.instagram = "None"
+  userDashStat.tiktok = "None"
+  userDashStat.twitch = "None"
+  userDashStat.tribute = BigInt.fromI32(0)
+  userDashStat.profit = BigInt.fromI32(0)
+  userDashStat.blacklist = []
+  return userDashStat
 }
 
-function initializeUserAchievements (id: string): void {
-  let userAchievements = new UserAchievements(id)
-  userAchievements.tasksCreated = BigInt.fromI32(0)
-  userAchievements.tasksJoined = BigInt.fromI32(0)
-  userAchievements.tasksVoted = BigInt.fromI32(0)
-  userAchievements.betsCreated = BigInt.fromI32(0)
-  userAchievements.betsJoined = BigInt.fromI32(0)
-  userAchievements.betsFinished = BigInt.fromI32(0)
-  userAchievements.accountCreation = BigInt.fromI32(0)
-  userAchievements.seasonOneRank = BigInt.fromI32(0)
-  userAchievements.seasonTwoRank = BigInt.fromI32(0)
-  userAchievements.seasonThreeRank = BigInt.fromI32(0)
+function initializeUserAchievement (id: string): UserAchievement {
+  let userAchievement = new UserAchievement(id)
+  userAchievement.tasksCreated = BigInt.fromI32(0)
+  userAchievement.tasksJoined = BigInt.fromI32(0)
+  userAchievement.tasksVoted = BigInt.fromI32(0)
+  userAchievement.betsCreated = BigInt.fromI32(0)
+  userAchievement.betsJoined = BigInt.fromI32(0)
+  userAchievement.betsFinished = BigInt.fromI32(0)
+  userAchievement.accountCreation = BigInt.fromI32(0)
+  userAchievement.seasonOneRank = BigInt.fromI32(0)
+  userAchievement.seasonTwoRank = BigInt.fromI32(0)
+  userAchievement.seasonThreeRank = BigInt.fromI32(0)
+  return userAchievement
   
-  let globalStatsId = "1"
-  let globalStats = GlobalStats.load(globalStatsId)
-  if(globalStats == null) {
-    initializeGlobalStats(globalStatsId)
+  let globalStatId = "1"
+  let globalStat = GlobalStat.load(globalStatId)
+  if(globalStat == null) {
+    initializeGlobalStat(globalStatId)
   }
-  globalStats.users = globalStats.users.plus(BigInt.fromI32(1))
-  globalStats.save()
+  globalStat.users = globalStat.users.plus(BigInt.fromI32(1))
+  globalStat.save()
 }
 
-function initializeGlobalStats (id: string): void {
-  let globalStats = new GlobalStats(id)
-  globalStats.taskProfits = BigInt.fromI32(0)
-  globalStats.users = BigInt.fromI32(0)
-  globalStats.taskCount = BigInt.fromI32(0)
-  globalStats.betProfit = BigInt.fromI32(0)
-  globalStats.betCount = BigInt.fromI32(0)
+function initializeGlobalStat (id: string): GlobalStat {
+  let globalStat = new GlobalStat(id)
+  globalStat.taskProfits = BigInt.fromI32(0)
+  globalStat.users = BigInt.fromI32(0)
+  globalStat.taskCount = BigInt.fromI32(0)
+  globalStat.betProfit = BigInt.fromI32(0)
+  globalStat.betCount = BigInt.fromI32(0)
+  return globalStat
 }
 
   /******************************************/
