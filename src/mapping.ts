@@ -123,11 +123,11 @@ export function handleBetCreated(event: BetCreated): void {
 
 
   // UserAchievement Entity
-  let userAchievementid = event.params.initiator.toHex()                                             
-  let userAchievement = UserAchievement.load(userAchievementid)
-  log.debug('Trying to load userAchievement with ID: {} | {}', [userAchievementid, event.params.initiator.toHex()])
+  let userAchievementId = event.params.initiator.toHex()                                             
+  let userAchievement = UserAchievement.load(userAchievementId)
+  log.debug('Trying to load userAchievement with ID: {} | {}', [userAchievementId, event.params.initiator.toHex()])
   if(userAchievement == null) {
-    userAchievement = initializeUserAchievement(userAchievementid)
+    userAchievement = initializeUserAchievement(userAchievementId)
     log.info('New UserAchievement entity created: {}', [event.params.initiator.toHex()])
   }
   userAchievement.betsCreated = userAchievement.betsCreated.plus(BigInt.fromI32(1)) 
