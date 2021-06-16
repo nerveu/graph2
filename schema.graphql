@@ -70,7 +70,7 @@ type UserBet @entity {
   betData: Bet
 }
 
-type UserFavStats @entity {
+type UserFavStat @entity {
   id: ID!
   negativeVotes: BigInt!
   positiveVotes: BigInt!
@@ -79,7 +79,7 @@ type UserFavStats @entity {
   betsLost: BigInt!
 }
 
-type UserDashStats @entity {
+type UserDashStat @entity {
   id: ID!
   userName: String!
   displayAchievement: String!
@@ -93,7 +93,7 @@ type UserDashStats @entity {
   blacklist: [Bytes!]!
 }
 
-type UserAchievements @entity {
+type UserAchievement @entity {
   id: ID!
   tasksCreated: BigInt!
   tasksJoined: BigInt!
@@ -107,7 +107,7 @@ type UserAchievements @entity {
   seasonThreeRank: BigInt!
 }
 
-type GlobalStats @entity {
+type GlobalStat @entity {
   id: ID!
   taskProfits: BigInt!
   users: BigInt!
