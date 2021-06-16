@@ -35,17 +35,17 @@ import {
   /*             Initialization             */
   /******************************************/
 
-function initializeUserFavStat (id: string): UserFavStat {
+function initializeUserFavStat (id: string): void {
   let userFavStat = new UserFavStat(id)
   userFavStat.negativeVotes = BigInt.fromI32(0)
   userFavStat.positiveVotes = BigInt.fromI32(0)
   userFavStat.betBalance = BigInt.fromI32(0)
   userFavStat.betsWon = BigInt.fromI32(0)
   userFavStat.betsLost = BigInt.fromI32(0)
-  return userFavStat
+  userFavStat.save()
 }
 
-function initializeUserDashStat (id: string): UserDashStat {
+function initializeUserDashStat (id: string): void {
   let userDashStat = new UserDashStat(id)
   userDashStat.userName = "Unknown"
   userDashStat.displayAchievement = "None"
@@ -57,10 +57,10 @@ function initializeUserDashStat (id: string): UserDashStat {
   userDashStat.tribute = BigInt.fromI32(0)
   userDashStat.profit = BigInt.fromI32(0)
   userDashStat.blacklist = []
-  return userDashStat
+  userDashStat.save()
 }
 
-function initializeUserAchievement (id: string): UserAchievement {
+function initializeUserAchievement (id: string): void {
   let userAchievement = new UserAchievement(id)
   userAchievement.tasksCreated = BigInt.fromI32(0)
   userAchievement.tasksJoined = BigInt.fromI32(0)
@@ -72,6 +72,7 @@ function initializeUserAchievement (id: string): UserAchievement {
   userAchievement.seasonOneRank = BigInt.fromI32(0)
   userAchievement.seasonTwoRank = BigInt.fromI32(0)
   userAchievement.seasonThreeRank = BigInt.fromI32(0)
+  userAchievement.save()
   
   let globalStatId = "1"
   let globalStat = GlobalStat.load(globalStatId)
@@ -80,17 +81,16 @@ function initializeUserAchievement (id: string): UserAchievement {
   }
   globalStat.users = globalStat.users.plus(BigInt.fromI32(1))
   globalStat.save()
-  return userAchievement
 }
 
-function initializeGlobalStat (id: string): GlobalStat {
+function initializeGlobalStat (id: string): void {
   let globalStat = new GlobalStat(id)
   globalStat.taskProfits = BigInt.fromI32(0)
   globalStat.users = BigInt.fromI32(0)
   globalStat.taskCount = BigInt.fromI32(0)
   globalStat.betProfit = BigInt.fromI32(0)
   globalStat.betCount = BigInt.fromI32(0)
-  return globalStat
+  globalStat.save()
 }
 
   /******************************************/
@@ -127,7 +127,8 @@ export function handleBetCreated(event: BetCreated): void {
   let userAchievement = UserAchievement.load(userAchievementId)
   log.debug('Trying to load userAchievement with ID: {} | {}', [userAchievementId, event.params.initiator.toHex()])
   if(userAchievement == null) {
-    userAchievement = initializeUserAchievement(userAchievementId)
+    initializeUserAchievement(userAchievementId)
+    userAchievement = UserAchievement.load(userAchievementId)
     log.info('New UserAchievement entity created: {}', [event.params.initiator.toHex()])
   }
   userAchievement.betsCreated = userAchievement.betsCreated.plus(BigInt.fromI32(1)) 
@@ -138,7 +139,8 @@ export function handleBetCreated(event: BetCreated): void {
   let globalStatId = "1"
   let globalStat = GlobalStat.load(globalStatId)
   if(globalStat == null) {
-    globalStat = initializeGlobalStat(globalStatId)
+    initializeGlobalStat(globalStatId)
+    globalStat = GlobalStat.load(globalStatId)
   }
   globalStat.betCount = globalStat.betCount.plus(BigInt.fromI32(1)) 
   globalStat.save()
