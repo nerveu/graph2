@@ -16,13 +16,12 @@ dataSources:
       entities:
         - Task
         - UserTask
-        - UserTask2
         - Bet
         - UserBet
-        - UserFavStats
-        - UserDashStats
-        - UserAchievements
-        - GlobalStats
+        - UserFavStat
+        - UserDashStat
+        - UserAchievement
+        - GlobalStat
       abis:
         - name: NerveGlobal
           file: ./abis/NerveGlobal.json
