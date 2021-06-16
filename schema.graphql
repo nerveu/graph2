@@ -72,11 +72,11 @@ type UserBet @entity {
 
 type UserFavStats @entity {
   id: ID!
-  negativeVotes: BigInt
-  positiveVotes: BigInt
-  betBalance: BigInt
-  betsWon: BigInt
-  betsLost: BigInt
+  negativeVotes: BigInt!
+  positiveVotes: BigInt!
+  betBalance: BigInt!
+  betsWon: BigInt!
+  betsLost: BigInt!
 }
 
 type UserDashStats @entity {
