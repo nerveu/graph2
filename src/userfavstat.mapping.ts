@@ -2,21 +2,8 @@ import { BigInt } from "@graphprotocol/graph-ts"
 import { log } from '@graphprotocol/graph-ts'
 import {
   BetBailout,
-  BetClosed,
-  BetCreated,
-  BetFinished,
   BetJoined,
-  BetProved,
   BetRedeemed,
-  DisplayAchievementChanged,
-  NameRegistered,
-  RecipientRedeemed,
-  SocialRegistered,
-  TaskAdded,
-  TaskJoined,
-  TaskProved,
-  UserBlacklisted,
-  UserRedeemed,
   Voted
 } from "../generated/NerveGlobal/NerveGlobal"
 import { 
@@ -38,16 +25,13 @@ function initializeUserFavStat (id: string): void {
   userFavStat.save()
 }
 
-
   /******************************************/
   /*               BetJoined                */
   /******************************************/
 
 export function handleBetJoined(event: BetJoined): void {
-
-  let betID = event.params.betID.toHex()
-  let participant = event.params.participant.toHex()
   
+  let participant = event.params.participant.toHex()
 
   // UserFavStat Entity
   let userFavStat = UserFavStat.load(participant)
@@ -58,7 +42,7 @@ export function handleBetJoined(event: BetJoined): void {
   }
   userFavStat.betBalance.minus(event.params.amount)
   userFavStat.save()
-
+}
 
   /******************************************/
   /*               BetRedeemed              */
@@ -66,14 +50,7 @@ export function handleBetJoined(event: BetJoined): void {
 
 export function handleBetRedeemed(event: BetRedeemed): void {
 
-  let betID = event.params.betID.toHex()
   let participant = event.params.participant.toHex()
-  
-
-  // UserBet Entity 1/2
-  let userBet = UserBet.load(participant + "-" + betID)
-  userBet.redeemed = true
-
 
   // UserFavStat Entity
   let userFavStat = UserFavStat.load(participant)
@@ -84,14 +61,9 @@ export function handleBetRedeemed(event: BetRedeemed): void {
   }
   userFavStat.betsWon = userFavStat.betsWon.plus(BigInt.fromI32(1)) 
   userFavStat.betBalance = userFavStat.betBalance.plus(event.params.profit)
-  userFavStat.betBalance = userFavStat.betBalance.plus(userBet.userStake)
+  //userFavStat.betBalance = userFavStat.betBalance.plus(userBet.userStake)
   userFavStat.save()
-  
-  
-  // 2/2 UserBet Entity 2/2
-  userBet.userStake = BigInt.fromI32(0)
-  userBet.save()
-
+}
 
   /******************************************/
   /*               BetBailout               */
@@ -99,9 +71,7 @@ export function handleBetRedeemed(event: BetRedeemed): void {
 
 export function handleBetBailout(event: BetBailout): void {
 
-  let betID = event.params.betID.toHex()
   let participant = event.params.participant.toHex()
-
   
   // UserFavStat Entity
   let userFavStat = UserFavStat.load(participant)
@@ -114,16 +84,13 @@ export function handleBetBailout(event: BetBailout): void {
   userFavStat.save()
 }
 
-
   /******************************************/
   /*                 Voted                  */
   /******************************************/
 
 export function handleVoted(event: Voted): void {
-  
-  let taskID = event.params.taskID.toHex()
+
   let participant = event.params.participant.toHex()
-  
   
   // UserFavStat Entity
   let userFavStat = UserFavStat.load(participant)
