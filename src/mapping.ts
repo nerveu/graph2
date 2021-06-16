@@ -99,9 +99,13 @@ function initializeGlobalStat (id: string): void {
 
 export function handleBetCreated(event: BetCreated): void {
 
+  let betID = event.params.betID.toHex()
+  let initiator = event.params.initiator.toHex()
+  
+  
   // Bet Entity
-  let bet = new Bet(event.params.betID.toHex())
-  log.info('New Bet entity created: {}', [event.params.betID.toHex()])
+  let bet = new Bet(betID)
+  log.info('New Bet entity created: {}', [betID])
   bet.initiatorAddress = event.params.initiator 
   bet.description = event.params.description 
   bet.textA = event.params.yesText 
@@ -113,23 +117,22 @@ export function handleBetCreated(event: BetCreated): void {
   bet.language = event.params.language 
   bet.save()
 
+  
   // UserBet Entity
-  let userBet = new UserBet(event.params.initiator.toHex() + "-" + event.params.betID.toHex())
-  log.info('New UserBet entity created: {} - {}', [event.params.initiator.toHex(), event.params.betID.toHex()])
+  let userBet = new UserBet(initiator + "-" + betID)
+  log.info('New UserBet entity created: {} - {}', [initiator, betID])
   userBet.userAddress = event.params.initiator 
   userBet.betData = event.params.betID.toHex()
   userBet.userStake = BigInt.fromI32(0)
   userBet.save()
 
 
-  // UserAchievement Entity
-  let userAchievementId = event.params.initiator.toHex()                                             
-  let userAchievement = UserAchievement.load(userAchievementId)
-  log.debug('Trying to load userAchievement with ID: {} | {}', [userAchievementId, event.params.initiator.toHex()])
+  // UserAchievement Entity                                       
+  let userAchievement = UserAchievement.load(initiator)
   if(userAchievement == null) {
-    initializeUserAchievement(userAchievementId)
-    userAchievement = UserAchievement.load(userAchievementId)
-    log.info('New UserAchievement entity created: {}', [event.params.initiator.toHex()])
+    initializeUserAchievement(initiator)
+    userAchievement = UserAchievement.load(initiator)
+    log.info('New UserAchievement entity created: {}', [initiator])
   }
   userAchievement.betsCreated = userAchievement.betsCreated.plus(BigInt.fromI32(1)) 
   userAchievement.save()
@@ -152,8 +155,12 @@ export function handleBetCreated(event: BetCreated): void {
 
 export function handleBetJoined(event: BetJoined): void {
 
+  let betID = event.params.betID.toHex()
+  let participant = event.params.participant.toHex()
+  
+  
   // Bet Entity
-  let bet = Bet.load(event.params.betID.toHex())
+  let bet = Bet.load(betID)
   if (event.params.joinA == true) {
     bet.stakeA = bet.stakeA.plus(event.params.amount) 
     bet.participantsA = bet.participantsA.plus(BigInt.fromI32(1)) 
@@ -163,9 +170,10 @@ export function handleBetJoined(event: BetJoined): void {
   }
   bet.save()
 
+  
   // UserBet Entity
-  let userBet = new UserBet(event.params.participant.toHex() + "-" + event.params.betID.toHex())
-  log.info('New UserBet entity created: {} - {}', [event.params.participant.toHex(), event.params.betID.toHex()])
+  let userBet = new UserBet(participant + "-" + betID)
+  log.info('New UserBet entity created: {} - {}', [participant, betID])
   userBet.userAddress = event.params.participant 
   userBet.userStake = event.params.amount
   userBet.joinedA = event.params.joinA
@@ -174,22 +182,22 @@ export function handleBetJoined(event: BetJoined): void {
 
 
   // UserFavStat Entity
-  let userFavStatId = event.params.participant.toHex()
-  let userFavStat = UserFavStat.load(userFavStatId)
+  let userFavStat = UserFavStat.load(participant)
   if(userFavStat == null) {
-    userFavStat = initializeUserFavStat(userFavStatId)
-    log.info('New UserFavStat entity created: {}', [event.params.participant.toHex()])
+    userFavStat = initializeUserFavStat(participant)
+    userFavStat = UserFavStat.load(participant)
+    log.info('New UserFavStat entity created: {}', [participant])
   }
   userFavStat.betBalance.minus(event.params.amount)
   userFavStat.save()
 
+  
   // UserAchievement Entity
-
-  let userAchievementId = event.params.participant.toHex()
-  let userAchievement = UserAchievement.load(userAchievementId)
+  let userAchievement = UserAchievement.load(participant)
   if(userAchievement == null) {
-    userAchievement = initializeUserAchievement(userAchievementId)
-    log.info('New UserAchievement entity created: {}', [event.params.participant.toHex()])
+    userAchievement = initializeUserAchievement(participant)
+    userAchievement = UserAchievement.load(participant)
+    log.info('New UserAchievement entity created: {}', [participant])
   }
   userAchievement.betsJoined = userAchievement.betsJoined.plus(BigInt.fromI32(1))
   userAchievement.save()
@@ -213,16 +221,21 @@ export function handleBetClosed(event: BetClosed): void {
 
 export function handleBetFinished(event: BetFinished): void {
 
+  let betID = event.params.betID.toHex()
+  let initiator = event.params.initiator.toHex()
+  
+  
   // Bet Entity
-  let bet = Bet.load(event.params.betID.toHex())
+  let bet = Bet.load(betID)
   bet.finished = true 
   bet.failed = event.params.failed                       
   bet.winnerPartyA = event.params.winnerPartyA
   bet.draw = event.params.draw 
   bet.save()
 
+  
   // UserAchievement Entity
-  let userAchievement = UserAchievement.load(event.params.initiator.toHex())
+  let userAchievement = UserAchievement.load(initiator)
   userAchievement.betsFinished = userAchievement.betsFinished.plus(BigInt.fromI32(1)) 
   userAchievement.save()
 }
@@ -233,27 +246,29 @@ export function handleBetFinished(event: BetFinished): void {
 
 export function handleBetRedeemed(event: BetRedeemed): void {
 
-  // Bet Entity
-  let bet = Bet.load(event.params.betID.toHex())
+  let betID = event.params.betID.toHex()
+  let participant = event.params.participant.toHex()
   
-  // 1/2 UserBet Entity
-  let userBet = UserBet.load(event.params.participant.toHex() + "-" + event.params.betID.toHex())
+
+  // UserBet Entity 1/2
+  let userBet = UserBet.load(participant + "-" + betID)
   userBet.redeemed = true
 
 
   // UserFavStat Entity
-  let userFavStatId = event.params.participant.toHex()
-  let userFavStat = UserFavStat.load(userFavStatId)
+  let userFavStat = UserFavStat.load(participant)
   if(userFavStat == null) {
-    userFavStat = initializeUserFavStat(userFavStatId)
-    log.info('New UserFacStat entity created: {}', [event.params.participant.toHex()])
+    userFavStat = initializeUserFavStat(participant)
+    userFavStat = UserFavStat.load(participant)
+    log.info('New UserFacStat entity created: {}', [participant])
   }
   userFavStat.betsWon = userFavStat.betsWon.plus(BigInt.fromI32(1)) 
   userFavStat.betBalance = userFavStat.betBalance.plus(event.params.profit)
   userFavStat.betBalance = userFavStat.betBalance.plus(userBet.userStake)
   userFavStat.save()
   
-  // 2/2 UserBet Entity
+  
+  // 2/2 UserBet Entity 2/2
   userBet.userStake = BigInt.fromI32(0)
   userBet.save()
 
@@ -263,6 +278,7 @@ export function handleBetRedeemed(event: BetRedeemed): void {
   let globalStat = GlobalStat.load(globalStatId)
   if(globalStat == null) {
     globalStat = initializeGlobalStat(globalStatId)
+    globalStat = GlobalStat.load(globalStatId)
   }
   globalStat.betProfit = globalStat.betProfit.plus(event.params.profit) 
   globalStat.save()
@@ -274,18 +290,22 @@ export function handleBetRedeemed(event: BetRedeemed): void {
 
 export function handleBetBailout(event: BetBailout): void {
 
+  let betID = event.params.betID.toHex()
+  let participant = event.params.participant.toHex()
+  
+  
   // UserBet Entity
-  let userBet = UserBet.load(event.params.participant.toHex() + "-" + event.params.betID.toHex())
+  let userBet = UserBet.load(participant + "-" + betID)
   userBet.userStake = BigInt.fromI32(0)
   userBet.save()
 
-
+  
   // UserFavStat Entity
-  let userFavStatId = event.params.participant.toHex()
-  let userFavStat = UserFavStat.load(userFavStatId)
+  let userFavStat = UserFavStat.load(participant)
   if(userFavStat == null) {
-    userFavStat = initializeUserFavStat(userFavStatId)
-    log.info('New UserFavStats entity created: {}', [event.params.participant.toHex()])
+    userFavStat = initializeUserFavStat(participant)
+    userFavStat = UserFavStat.load(participant)
+    log.info('New UserFavStats entity created: {}', [participant])
   }
   userFavStat.betBalance = userFavStat.betBalance.plus(event.params.userStake)
   userFavStat.save()
@@ -314,9 +334,13 @@ export function handleBetProved(event: BetProved): void {
 
 export function handleTaskAdded(event: TaskAdded): void {
   
+  let taskID = event.params.taskID.toHex()
+  let initiator = event.params.participant.toHex()
+  
+  
   // Task Entity
-  let task = new Task(event.params.taskID.toHex())
-  log.info('New Task entity created: {}', [event.params.taskID.toHex()])
+  let task = new Task(taskID)
+  log.info('New Task entity created: {}', [taskID])
   task.initiatorAddress = event.params.initiator
   task.recipientAddress = event.params.recipient
   task.amount = event.params.amount
@@ -330,31 +354,33 @@ export function handleTaskAdded(event: TaskAdded): void {
   task.language = event.params.language
   task.save()
 
+  
   // UserTask Entity
-  let userTask = new UserTask(event.params.initiator.toHex() + "-" + event.params.taskID.toHex())
-  log.info('New UserTask entity created: {} - {}', [event.params.initiator.toHex(), event.params.taskID.toHex()])
+  let userTask = new UserTask(initiator + "-" + taskID)
+  log.info('New UserTask entity created: {} - {}', [initiator, taskID])
   userTask.userAddress = event.params.initiator
   userTask.userStake = event.params.amount
   userTask.taskData = event.params.taskID.toHex()
   userTask.save()
 
-
+  
   // UserAchievement Entity
-  let userAchievementId = event.params.initiator.toHex()
-  let userAchievement = UserAchievement.load(userAchievementId)
+  let userAchievement = UserAchievement.load(initiator)
   if(userAchievement == null) {
-    userAchievement = initializeUserAchievement(userAchievementId)
-    log.info('New UserAchievements entity created: {}', [event.params.initiator.toHex()])
+    userAchievement = initializeUserAchievement(initiator)
+    userAchievement = UserAchievement.load(initiator)
+    log.info('New UserAchievements entity created: {}', [initiator])
   }
   userAchievement.tasksCreated = userAchievement.tasksCreated.plus(BigInt.fromI32(1))
   userAchievement.save()                                                                   
 
+  
   // GlobalStats Entity
-
   let globalStatId = "1"
   let globalStat = GlobalStat.load(globalStatId)
   if(globalStat == null) {
     globalStat = initializeGlobalStat(globalStatId)
+    globalStat = GlobalStat.load(globalStatId)
   }
   globalStat.taskCount = globalStat.taskCount.plus(BigInt.fromI32(1)) 
   globalStat.save()
@@ -366,38 +392,43 @@ export function handleTaskAdded(event: TaskAdded): void {
 
 export function handleTaskJoined(event: TaskJoined): void {
   
+  let taskID = event.params.taskID.toHex()
+  let participant = event.params.participant.toHex()
+  
+  
   // Task Entity
-  let task = Task.load(event.params.taskID.toHex())
+  let task = Task.load(taskID)
   task.participants = task.participants.plus(BigInt.fromI32(1))
   task.amount = task.amount.plus(event.params.amount)
   task.save()
 
+  
   // UserTask Entity
-  let userTask = new UserTask(event.params.participant.toHex() + "-" + event.params.taskID.toHex())
-  log.info('New UserTask entity created: {} - {}', [event.params.participant.toHex(), event.params.taskID.toHex()])
+  let userTask = new UserTask(participant + "-" + taskID)
+  log.info('New UserTask entity created: {} - {}', [participant, taskID])
   userTask.userAddress = event.params.participant
   userTask.userStake = event.params.amount
   userTask.taskData = event.params.taskID.toHex()
   userTask.save()
 
-
+  
   // UserDashStat Entity
-  let userDashStatId = event.params.participant.toHex()
-  let userDashStat = UserDashStat.load(userDashStatId)
+  let userDashStat = UserDashStat.load(participant)
   if(userDashStat == null) {
-    userDashStat = initializeUserDashStat(userDashStatId)
-    log.info('New UserDashStat entity created: {}', [event.params.participant.toHex()])
+    userDashStat = initializeUserDashStat(participant)
+    userDashStat = UserDashStat.load(participant)
+    log.info('New UserDashStat entity created: {}', [participant])
   }
   userDashStat.tribute = userDashStat.tribute.plus(event.params.amount)
   userDashStat.save()                                                                   
 
-
+  
   // UserAchievements Entity
-  let userAchievementId = event.params.participant.toHex()
-  let userAchievement = UserAchievement.load(userAchievementId)
+  let userAchievement = UserAchievement.load(participant)
   if(userAchievement == null) {
-    userAchievement = initializeUserAchievement(userAchievementId)
-    log.info('New UserAchievement entity created: {}', [event.params.participant.toHex()])
+    userAchievement = initializeUserAchievement(participant)
+    userAchievement = UserAchievement.load(participant)
+    log.info('New UserAchievement entity created: {}', [participant])
   }
   userAchievement.tasksJoined = userAchievement.tasksJoined.plus(BigInt.fromI32(1))
   userAchievement.save()                                                                 
@@ -409,8 +440,12 @@ export function handleTaskJoined(event: TaskJoined): void {
 
 export function handleVoted(event: Voted): void {
   
+  let taskID = event.params.taskID.toHex()
+  let participant = event.params.participant.toHex()
+  
+  
   // Task Entity
-  let task = Task.load(event.params.taskID.toHex())
+  let task = Task.load(taskID)
   if (event.params.vote == true) {
     task.positiveVotes = task.positiveVotes.plus(BigInt.fromI32(1))
   } else {
@@ -419,19 +454,20 @@ export function handleVoted(event: Voted): void {
   task.finished = event.params.finished
   task.save()
 
+  
   // UserTask Entity
-  let userTask = UserTask.load(event.params.participant.toHex() + "-" + event.params.taskID.toHex())
+  let userTask = UserTask.load(participant + "-" + taskID)
   userTask.voted = true
   userTask.vote = event.params.vote
   userTask.save()
 
-
+  
   // UserFavStat Entity
-  let userFavStatId = event.params.participant.toHex()
-  let userFavStat = UserFavStat.load(userFavStatId)
+  let userFavStat = UserFavStat.load(participant)
   if(userFavStat == null) {
-    userFavStat = initializeUserFavStat(userFavStatId)
-    log.info('New UserFavStat entity created: {}', [event.params.participant.toHex()])
+    userFavStat = initializeUserFavStat(participant)
+    userFavStat = UserFavStat.load(participant)
+    log.info('New UserFavStat entity created: {}', [participant])
   }
   if (event.params.vote == true) {
     userFavStat.positiveVotes = userFavStat.positiveVotes.plus(BigInt.fromI32(1))
@@ -440,13 +476,13 @@ export function handleVoted(event: Voted): void {
   }
   userFavStat.save()                                                                            
 
-
+  
   // UserAchievements Entity
-  let userAchievementId = event.params.participant.toHex()
-  let userAchievement = UserAchievement.load(userAchievementId)
+  let userAchievement = UserAchievement.load(participant)
   if(userAchievement == null) {
-    userAchievement = initializeUserAchievement(userAchievementId)
-    log.info('New UserAchievement entity created: {}', [event.params.participant.toHex()])
+    userAchievement = initializeUserAchievement(participant)
+    userAchievement = UserAchievement.load(participant)
+    log.info('New UserAchievement entity created: {}', [participant])
   }
   userAchievement.tasksVoted = userAchievement.tasksVoted.plus(BigInt.fromI32(1))
   userAchievement.save()                                                                        
@@ -458,18 +494,22 @@ export function handleVoted(event: Voted): void {
 
 export function handleUserRedeemed(event: UserRedeemed): void {
 
+  let taskID = event.params.taskID.toHex()
+  let participant = event.params.participant.toHex()
+  
+  
   // UserTask Entity
-  let userTask = UserTask.load(event.params.participant.toHex() + "-" + event.params.taskID.toHex())
+  let userTask = UserTask.load(participant + "-" + taskID)
   userTask.userStake = BigInt.fromI32(0)
   userTask.save()
 
+  
   // UserDashStat Entity
-  let id = event.params.participant.toHex()
-
-  let userDashStat = UserDashStat.load(id)
+  let userDashStat = UserDashStat.load(participant)
   if(userDashStat == null) {
-    userDashStat = initializeUserDashStat(id)
-    log.info('New UserDashStat entity created: {}', [event.params.participant.toHex()])
+    userDashStat = initializeUserDashStat(participant)
+    userDashStat = UserDashStat.load(participant)
+    log.info('New UserDashStat entity created: {}', [participant])
   }
   userDashStat.tribute.minus(event.params.amount)
   userDashStat.save()                                                                    
@@ -481,32 +521,39 @@ export function handleUserRedeemed(event: UserRedeemed): void {
 
 export function handleRecipientRedeemed(event: RecipientRedeemed): void {
 
+  let taskID = event.params.taskID.toHex()
+  let recipient = event.params.recipient.toHex()
+
+  
   // Task Entity
-  let task = Task.load(event.params.taskID.toHex())
+  let task = Task.load(taskID)
   task.executed = true
   task.save()
 
+  
   // UserTask Entity
-  let userTask = UserTask.load(event.params.recipient.toHex() + "-" + event.params.taskID.toHex())
+  let userTask = UserTask.load(recipient + "-" + taskID)
   userTask.userStake = BigInt.fromI32(0)
   userTask.save()
 
+  
   // UserDashStat Entity
-  let id = event.params.recipient.toHex()
-  let userDashStat = UserDashStat.load(id)
+  let userDashStat = UserDashStat.load(recipient)
   if(userDashStat == null) {
-    userDashStat = initializeUserDashStat(id)
-    log.info('New UserDashStat entity created: {}', [event.params.recipient.toHex()])
+    userDashStat = initializeUserDashStat(recipient)
+    userDashStat = UserDashStat.load(recipient)
+    log.info('New UserDashStat entity created: {}', [recipient])
   }
   userDashStat.profit = userDashStat.profit.plus(event.params.amount)
   userDashStat.save()                                                                 
 
-
+  
   // GlobalStats Entity
   let globalStatId = "1"
   let globalStat = GlobalStat.load(globalStatId)
   if(globalStat == null) {
     globalStat = initializeGlobalStat(globalStatId)
+    globalStat = GlobalStat.load(globalStatId)
   }
   globalStat.taskProfits = globalStat.taskProfits.plus(event.params.amount) 
   globalStat.save()
@@ -517,9 +564,12 @@ export function handleRecipientRedeemed(event: RecipientRedeemed): void {
   /******************************************/
 
 export function handleTaskProved(event: TaskProved): void {
-
+   
+  let taskId = event.params.taskID.toHex()
+  
+  
   // Task Entity
-  let task = Task.load(event.params.taskID.toHex())
+  let task = Task.load(taskId)
   task.proofLink = event.params.proofLink
   task.save()
 }
@@ -530,12 +580,15 @@ export function handleTaskProved(event: TaskProved): void {
 
 export function handleNameRegistered(event: NameRegistered): void {
 
+  let user = event.params.user.toHex()
+    
+  
   //  UserDashStat Entity
-  let id = event.params.user.toHex()
-  let userDashStat = UserDashStat.load(id)
+  let userDashStat = UserDashStat.load(user)
   if(userDashStat == null) {
-    userDashStat = initializeUserDashStat(id)
-    log.info('New UserDashStat entity created: {}', [event.params.user.toHex()])
+    userDashStat = initializeUserDashStat(user)
+    userDashStat = UserDashStat.load(user)
+    log.info('New UserDashStat entity created: {}', [user])
   }
   userDashStat.userName = event.params.registeredName.toHex()
   userDashStat.save()                                                            
@@ -546,13 +599,16 @@ export function handleNameRegistered(event: NameRegistered): void {
   /******************************************/
 
 export function handleSocialRegistered(event: SocialRegistered): void {
-
+  
+  let user = event.params.user.toHex()
+  
+  
   // UserDashStat Entity
-  let id = event.params.user.toHex()
-  let userDashStat = UserDashStat.load(id)
+  let userDashStat = UserDashStat.load(user)
   if(userDashStat == null) {
-    userDashStat = initializeUserDashStat(id)
-    log.info('New UserDashStat entity created: {}', [event.params.user.toHex()])
+    userDashStat = initializeUserDashStat(user)
+    userDashStat = UserDashStat.load(user)
+    log.info('New UserDashStat entity created: {}', [user])
   }
   if(event.params.socialID == BigInt.fromI32(1))
     userDashStat.instagram = event.params.registeredLink.toString()
@@ -573,12 +629,15 @@ export function handleSocialRegistered(event: SocialRegistered): void {
 
 export function handleUserBlacklisted(event: UserBlacklisted): void {
 
+  let user = event.params.user.toHex()
+    
+  
   // UserDashStat Entity
-  let id = event.params.user.toHex()
-  let userDashStat = UserDashStat.load(id)
+  let userDashStat = UserDashStat.load(user)
   if(userDashStat == null) {
-    userDashStat = initializeUserDashStat(id)
-    log.info('New UserDashStat entity created: {}', [event.params.user.toHex()])
+    userDashStat = initializeUserDashStat(user)
+    userDashStat = UserDashStat.load(user)
+    log.info('New UserDashStat entity created: {}', [user])
   }
   userDashStat.blacklist.push(event.params.userToBlacklist)
   userDashStat.save()                                                         
@@ -589,13 +648,16 @@ export function handleUserBlacklisted(event: UserBlacklisted): void {
   /******************************************/
 
 export function handleDisplayAchievementChanged(event: DisplayAchievementChanged): void {
+
+  let user = event.params.user.toHex()
+    
   
   // UserDashStat Entity
-  let id = event.params.user.toHex()
-  let userDashStat = UserDashStat.load(id)
+  let userDashStat = UserDashStat.load(user)
   if(userDashStat == null) {
-    userDashStat = initializeUserDashStat(id)
-    log.info('New UserDashStat entity created: {}', [event.params.user.toHex()])
+    userDashStat = initializeUserDashStat(user)
+    userDashStat = UserDashStat.load(user)
+    log.info('New UserDashStat entity created: {}', [user])
   }
   userDashStat.displayAchievement = event.params.achievement
   userDashStat.save()                                                         
