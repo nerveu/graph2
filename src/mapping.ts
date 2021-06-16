@@ -35,17 +35,17 @@ import {
   /*             Initialization             */
   /******************************************/
 
-function initializeUserFavStat (id: string): void {
+function initializeUserFavStat (id: string): UserFavStat {
   let userFavStat = new UserFavStat(id)
   userFavStat.negativeVotes = BigInt.fromI32(0)
   userFavStat.positiveVotes = BigInt.fromI32(0)
   userFavStat.betBalance = BigInt.fromI32(0)
   userFavStat.betsWon = BigInt.fromI32(0)
   userFavStat.betsLost = BigInt.fromI32(0)
-
+  return userFavStat
 }
 
-function initializeUserDashStat (id: string): void {
+function initializeUserDashStat (id: string): UserDashStat {
   let userDashStat = new UserDashStat(id)
   userDashStat.userName = "Unknown"
   userDashStat.displayAchievement = "None"
@@ -57,9 +57,10 @@ function initializeUserDashStat (id: string): void {
   userDashStat.tribute = BigInt.fromI32(0)
   userDashStat.profit = BigInt.fromI32(0)
   userDashStat.blacklist = []
+  return userDashStat
 }
 
-function initializeUserAchievement (id: string): void {
+function initializeUserAchievement (id: string): UserAchievement {
   let userAchievement = new UserAchievement(id)
   userAchievement.tasksCreated = BigInt.fromI32(0)
   userAchievement.tasksJoined = BigInt.fromI32(0)
@@ -79,15 +80,17 @@ function initializeUserAchievement (id: string): void {
   }
   globalStat.users = globalStat.users.plus(BigInt.fromI32(1))
   globalStat.save()
+  return userAchievement
 }
 
-function initializeGlobalStat (id: string): void {
+function initializeGlobalStat (id: string): GlobalStat {
   let globalStat = new GlobalStat(id)
   globalStat.taskProfits = BigInt.fromI32(0)
   globalStat.users = BigInt.fromI32(0)
   globalStat.taskCount = BigInt.fromI32(0)
   globalStat.betProfit = BigInt.fromI32(0)
   globalStat.betCount = BigInt.fromI32(0)
+  return globalStat
 }
 
   /******************************************/
