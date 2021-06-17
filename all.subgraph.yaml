@@ -1,4 +1,6 @@
 specVersion: 0.0.2
+description: nerveglobal.com
+repository:
 schema:
   file: ./schema.graphql
 dataSources:
