@@ -579,7 +579,7 @@ export function handleNameRegistered(event: NameRegistered): void {
     userDashStat = UserDashStat.load(user)
     log.info('New UserDashStat entity created: {}', [user])
   }
-  userDashStat.userName = event.params.registeredName.toHex()
+  userDashStat.userName = event.params.registeredName.toString()
   userDashStat.save()                                                            
 }
 
