@@ -73,6 +73,16 @@ function initializeUserAchievement (id: string): void {
   userAchievement.seasonTwoRank = BigInt.fromI32(0)
   userAchievement.seasonThreeRank = BigInt.fromI32(0)
   userAchievement.save()
+  
+  let globalStatId = "1"
+  let globalStat = GlobalStat.load(globalStatId)
+  if(globalStat == null) {
+    initializeGlobalStat(globalStatId)
+    globalStat = GlobalStat.load(globalStatId)
+  }
+  globalStat.users = globalStat.users.plus(BigInt.fromI32(1))
+  globalStat.save()
+}
 }
 
 function initializeGlobalStat (id: string): void {
